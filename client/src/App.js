@@ -1,16 +1,18 @@
 import logo from './logo.svg';
+import AuthPage from './components/AuthPage'
 import './App.scss';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom'
 
 function App() {
+
   return (
-    <>
-      <h1 className="App">
-        Hello World
-      </h1>
-      <div className="input-container">
-        <input type="text"></input>
-      </div>
-    </>
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <AuthPage />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

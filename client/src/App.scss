@@ -1,42 +1,57 @@
-.App {
-  text-align: center;
-}
+$major: #2482ab;
+$minor: #76bddc;
+$bright: #ffffff;
+$dark: #000000;
+$contentFont: normal 30px Segoe UI;
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.input-container {
-  display: f
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.auth-page {
+  width: auto;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+  align-items: center;
+  background-color: $major;
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  .auth-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 12px;
+    width: 310px;
+    height: 94px;
+    input {
+      width: 310px;
+      height: 50px;
+      padding: 0px;
+      margin-top: 3px;
+      border: 1px solid $dark;
+      font: $contentFont;
+    }
+    p {
+      margin: 0px;
+      color: $bright;
+      font: $contentFont;
+    }
   }
-  to {
-    transform: rotate(360deg);
+  .sign-in-button{
+    width: 310px;
+    height: 50px;
+    color: $bright;
+    font: $contentFont;
+    background-color: $minor;
+    margin-top: 60px;
+    text-align: center;
+    border: 1px solid $dark;
+    cursor: pointer;
+  }
+  .create-account-button{
+    width: 310px;
+    height: 50px;
+    color: $bright;
+    font: $contentFont;
+    text-align: center;
+    margin-top: 21px;
+    cursor: pointer;
   }
 }
