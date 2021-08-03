@@ -18,10 +18,10 @@ export default function AuthPage() {
     <div className="auth-page">
       {inputBoxes.map(box => AuthInput(box.title, box.type))}
       {!create && <div className="sign-in-button">Sign in</div>}
-      <div className={create ? "sign-in-button":"create-account-button"} 
-        onClick={create ? ()=>{console.log('creating account')}: 
-        ()=>{setCreate(true)}}>Create Account</div>
-      {create && <div className='create-account-button' onClick={()=>{setCreate(false)}}>Sign in instead</div>}
+      <div className={create ? "sign-in-button" : "create-account-button"}
+        onClick={create ? () => { console.log('creating account') } :
+          () => { setCreate(true) }}>Create Account</div>
+      {create && <div className='create-account-button' onClick={() => { setCreate(false) }}>Sign in instead</div>}
     </div>
 
   )
