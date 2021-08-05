@@ -1,9 +1,16 @@
 import React from 'react'
+import { useHistory } from 'react-router-dom'
 import { Select, Table } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import '../App.scss';
-export default function Dashboard(options) {
+import './DashboardPage.scss';
+export default function DashboardPage(options) {
   const { Option } = Select;
+  const history = useHistory()
+
+  const navigateTo = (url) => {
+    history.push(url)
+  }
+  
   const columns = [
     {
       title: 'Title',
@@ -32,7 +39,7 @@ export default function Dashboard(options) {
     }
   ]
   return (
-    <div className="dashboard">
+    <div className="dashboard-page">
       <div className="userName">(Name)</div>
       <div className="search-row">
         <div className='search-by'>Search by</div>
@@ -54,7 +61,7 @@ export default function Dashboard(options) {
               <SearchOutlined className='search-icon' />
             </div>
           </div>
-          <div id='advanced-search'>Advanced Search</div>
+          <div id='advanced-search' onClick={()=>navigateTo('/advancedSearch')}>Advanced Search</div>
         </div>
       </div>
       <div className='wishlist-title'>Your Wishlist</div>

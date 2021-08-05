@@ -1,5 +1,6 @@
 import AuthPage from './components/AuthPage'
-import Dashboard from './components/Dashboard'
+import DashboardPage from './components/DashboardPage'
+import AdvancedSearchPage from './components/AdvancedSearchPage';
 import './App.scss';
 import { Route, Switch, BrowserRouter as Router } from 'react-router-dom'
 
@@ -12,7 +13,10 @@ function App() {
           <AuthPage />
         </Route>
         <Route path='/dashboard'>
-          <Dashboard />
+          <DashboardPage />
+        </Route>
+        <Route path='/advancedSearch'>
+          <AdvancedSearchPage />
         </Route>
       </Switch>
     </Router>

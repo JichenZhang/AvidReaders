@@ -16,7 +16,8 @@ module.exports = {
                 '@font-size-base':'30px',
                 '@select-dropdown-height':'50px',
                 '@select-single-item-height':'50px',
-                '@select-multiple-item-height-lg': '50px'
+                '@select-multiple-item-height-lg': '50px',
+                '@heading-color':'#FFFFFF',
             },
             javascriptEnabled: true,
           },

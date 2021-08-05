@@ -1,8 +1,14 @@
 import React, { useState } from 'react'
-import '../App.scss'
+import { useHistory } from 'react-router-dom'
+import './AuthPage.scss'
 
 export default function AuthPage() {
   const [create, setCreate] = useState(false)
+  const history = useHistory()
+  const login = () => {
+    const path = '/dashboard'
+    history.push(path)
+  }
   let inputBoxes = create ? [{
     title: 'Login', type: 'text'
   }, {
@@ -17,11 +23,24 @@ export default function AuthPage() {
   return (
     <div className="auth-page">
       {inputBoxes.map(box => AuthInput(box.title, box.type))}
-      {!create && <div className="sign-in-button">Sign in</div>}
-      <div className={create ? "sign-in-button" : "create-account-button"}
+      {!create &&
+        <div
+          className="sign-in-button"
+          onClick={login}
+        >Sign in
+        </div>}
+      <div
+        className={create ? "sign-in-button" : "create-account-button"}
         onClick={create ? () => { console.log('creating account') } :
-          () => { setCreate(true) }}>Create Account</div>
-      {create && <div className='create-account-button' onClick={() => { setCreate(false) }}>Sign in instead</div>}
+          () => { setCreate(true) }}
+      >Create Account
+      </div>
+      {create &&
+        <div
+          lassName='create-account-button'
+          onClick={() => { setCreate(false) }}
+        >Sign in instead
+        </div>}
     </div>
 
   )

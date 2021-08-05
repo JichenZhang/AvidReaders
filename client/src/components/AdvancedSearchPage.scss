@@ -1,0 +1,51 @@
+@import '../App';
+.advanced-search-page{
+    background-color: $major;
+    width:100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    .userName{
+      position:absolute;
+      top: 90px;
+      right: 113px;
+      color: $bright;
+    }
+    .type-bar{
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+      margin-top: 60px;
+      margin-left: 126px;
+      width: 600px;
+      height: 60px;
+  
+      .home-icon{
+        font-size: 40px;
+        margin-right: 74px;
+        color: $bright;
+        border: none;
+        cursor: pointer;
+      }
+  
+      .type-span{
+        color: $bright;
+        margin-right: 74px;
+        font-size: 44px;
+        line-height: initial;
+        border-bottom-color: $bright;
+        border-bottom-style: solid;
+        cursor: pointer;
+      }
+    }
+    .search-pane{
+      flex-direction: column;
+      margin-left: 126px; 
+      margin-top: 37px;
+      width: 310px;
+      color: $bright;
+    }
+}
+  
