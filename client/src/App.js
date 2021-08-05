@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import AuthPage from './components/AuthPage'
 import Dashboard from './components/Dashboard'
 import './App.scss';
