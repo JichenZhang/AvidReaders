@@ -26,6 +26,30 @@ db.connect((err) => {
 app.get('/', (req, res) => {
   res.send('hello backend')
 })
+// authenticate
+app.get('/user', (req, res) => {
+  console.log(req.query)
+  const { login, password } = req.query
+  const authSql = (
+    "SELECT * " +
+    "FROM user " +
+    "WHERE User_Login = '" + login + "' " +
+    "AND User_Password = '" + password + "';"
+  )
+  db.query(authSql, (err, result)=>{
+    if (err){
+      console.log(err)
+      res.sendStatus(500)
+      return
+    }
+    if (result.length === 0){
+      res.status(400).send({ message: "user not found"})
+      return
+    }
+    res.send(result[0])
+    return
+  })
+})
 // create account
 app.post('/user', (req, res) => {
   console.log(req.body)
@@ -56,13 +80,15 @@ app.post('/user', (req, res) => {
         res.sendStatus(500)
         return
       }
-      db.query(findUserIDSql, (err, result)=>{
-        if (err){
+      db.query(findUserIDSql, (err, result) => {
+        if (err) {
           console.error(err)
           res.sendStatus(500)
           return
         }
-        console.log('userid=',result)
+        res.send(result[0])
+        console.log('userid=', result)
+        return
       })
     })
   })

@@ -1,11 +1,14 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { Select, Table } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import './DashboardPage.scss';
 export default function DashboardPage(options) {
   const { Option } = Select;
   const history = useHistory()
+  const User_Name = useSelector(state => state.any.User_Name)
+  const User_ID = useSelector(state => state.any.User_ID)
 
   const navigateTo = (url) => {
     history.push(url)
@@ -40,7 +43,7 @@ export default function DashboardPage(options) {
   ]
   return (
     <div className="dashboard-page">
-      <div className="userName">(Name)</div>
+      <div className="userName">{User_Name}</div>
       <div className="search-row">
         <div className='search-by'>Search by</div>
         <div className='select-container'>
