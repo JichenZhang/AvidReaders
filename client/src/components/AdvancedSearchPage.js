@@ -70,7 +70,9 @@ export default function AdvancedSearchPage() {
           label='Genre:'
           name='genre'
         >
-          <Select style={{ backgroundColor: 'white', height: '55px' }}>
+          <Select 
+            style={{ backgroundColor: 'white', height: '55px' }}
+            defaultValue='anygenre'>
             <Select.Option value='anygenre'>Any Genre</Select.Option>
           </Select>
         </Form.Item>

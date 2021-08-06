@@ -1,7 +1,8 @@
 @import '../App';
 .auth-page {
     width: auto;
-    height: 100vh;
+    height: auto;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
