@@ -3,7 +3,6 @@ const cors = require('cors')
 const mysql = require('mysql2')
 
 const app = express()
-const allowedOrigins = ['http//localhost:3000']
 const options = {
   origin: '*'
 }
@@ -23,6 +22,18 @@ db.connect((err) => {
   console.log('database connection established')
 });
 
+function queryMySql(query) {
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err) { 
+        reject(err) 
+      }else{
+        resolve(result)
+      }
+    })
+  })
+}
+
 app.get('/', (req, res) => {
   res.send('hello backend')
 })
@@ -36,14 +47,14 @@ app.get('/user', (req, res) => {
     "WHERE User_Login = '" + login + "' " +
     "AND User_Password = '" + password + "';"
   )
-  db.query(authSql, (err, result)=>{
-    if (err){
+  db.query(authSql, (err, result) => {
+    if (err) {
       console.log(err)
       res.sendStatus(500)
       return
     }
-    if (result.length === 0){
-      res.status(400).send({ message: "user not found"})
+    if (result.length === 0) {
+      res.status(400).send({ message: "user not found" })
       return
     }
     res.send(result[0])
@@ -93,6 +104,38 @@ app.post('/user', (req, res) => {
     })
   })
   // res.send({ o: 'hello user' })
+})
+// get book details
+app.get('/book', (req, res) => {
+  console.log(req.query)
+  const { Book_ID } = req.query
+  const getAuthorSql = (
+    "SELECT a.* " +
+    "FROM author a, is_written_by w " +
+    "WHERE w.Book_ID = " + Book_ID + " " +
+    "AND w.Author_ID = a.Author_ID;"
+  )
+  const getSeriesSql = (
+    "SELECT s.* " +
+    "FROM series s, is_part_of p " +
+    "WHERE p.Book_ID = " + Book_ID + " " +
+    "AND p.Series_ID = s.Series_ID;"
+  )
+  const getGenreSql = (
+    "SELECT g.Genre_Name, g.Is_Tagged_As_Number_Of_Times " +
+    "FROM is_tagged_as g " +
+    "WHERE g.Book_ID = " + Book_ID + " " +
+    "ORDER BY g.Is_Tagged_As_Number_Of_Times DESC;"
+  )
+  Promise.all([getAuthorSql, getSeriesSql, getGenreSql].map(x=>queryMySql(x))).then((data)=>{
+    answer = {}
+    for (let x of data){
+      answer = {...answer, ...x}
+    }
+    res.send(answer)
+  },(error)=>{
+    res.status(500).send(error)
+  })
 })
 
 app.listen('3001', () => {

@@ -1,5 +1,6 @@
 
 const baseUrl = 'http://localhost:3001'
+
 /**
  * 
  * @param {{login, password}} 
@@ -51,6 +52,31 @@ async function createAccount(accountData, userIDCallback) {
 		userIDCallback(res.User_ID)
 	}
 
+}
+
+/**
+ * 
+ * @param {Number} bookID 
+ * @param {({BookInfoPlus})=>{}} bookDetailsCallback 
+ */
+async function getBookDetails(bookID, bookDetailsCallback) {
+	const route = '/book'
+	const url = (
+		baseUrl + route + '?id=' + bookID
+	)
+	const response = await fetch(url,{
+		method: 'GET',
+		headers:{
+			'Accept': 'application/json'
+		}
+	})
+	if (response.ok){
+		const res = await response.json()
+		bookDetailsCallback(res)
+		return
+	}else{
+		console.error(response)
+	}
 }
 
 export { authenticate, createAccount }
