@@ -1,53 +1,55 @@
-@import '../App';
+@import "../App";
 .auth-page {
-    width: auto;
-    height: auto;
-    min-height: 100vh;
+  width: auto;
+  height: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: $major;
+
+  .auth-input {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    background-color: $major;
-  
-    .auth-input {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      margin-top: 12px;
-      width: 310px;
-      height: 94px;
-      input {
-        width: 310px;
-        height: 50px;
-        padding: 0px;
-        margin-top: 3px;
-        border: 1px solid $dark;
-        font: $contentFont;
-      }
-      p {
-        margin: 0px;
-        color: $bright;
-        font: $contentFont;
-      }
-    }
-    .sign-in-button {
+    margin-top: 12px;
+    width: 310px;
+    height: 94px;
+    input {
       width: 310px;
       height: 50px;
-      color: $bright;
+      padding: 0px;
+      margin-top: 3px;
+      // border: 1px solid $dark;
+      border: none;
       font: $contentFont;
-      background-color: $minor;
-      margin-top: 60px;
-      text-align: center;
-      border: 1px solid $dark;
-      cursor: pointer;
     }
-    .create-account-button {
-      width: 310px;
-      height: 50px;
+    p {
+      margin: 0px;
       color: $bright;
       font: $contentFont;
-      text-align: center;
-      margin-top: 21px;
-      cursor: pointer;
     }
   }
+  .sign-in-button {
+    width: 310px;
+    height: 50px;
+    color: $bright;
+    font: $contentFont;
+    background-color: $minor;
+    margin-top: 60px;
+    text-align: center;
+    //   border: 1px solid $dark;
+		border: none;
+    cursor: pointer;
+  }
+  .create-account-button {
+    width: 310px;
+    height: 50px;
+    color: $bright;
+    font: $contentFont;
+    text-align: center;
+    margin-top: 21px;
+    cursor: pointer;
+  }
+}
