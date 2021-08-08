@@ -67,8 +67,8 @@ app.post('/user', (req, res) => {
 	const { login, password, name } = req.body
 	if (login === '' || password === '' || name === '') {
 		console.error('user trying to create empty string login/password/username')
-		res.status(400).send({message: 'account fields shouldn\'t be empty.'})
-	}	
+		res.status(400).send({ message: 'account fields shouldn\'t be empty.' })
+	}
 	const findUserSql = "SELECT * " +
 		"FROM user " +
 		"WHERE User_Login = '" + login + "' " +
@@ -110,10 +110,30 @@ app.post('/user', (req, res) => {
 	})
 	// res.send({ o: 'hello user' })
 })
+
+// get all wishlist
+app.get('/wishlist', async (req, res) => {
+	console.log(req.query)
+	const {User_ID} = req.query
+	const getWishlistSql = (
+		"SELECT b.* " +
+		"FROM book b, adds_to_wishlist w " +
+		"WHERE w.User_ID = " + User_ID + " " +
+		"AND w.Book_ID = b.Book_ID;"
+	)
+	try{
+		const data = await queryMySql(getWishlistSql)
+		res.send(data)
+	}catch(e){
+		res.status(500).send(e)
+	}
+	
+})
+
 // get book details - everything related to a book by bookid
 app.get('/book', (req, res) => {
 	console.log(req.query)
-	const Book_ID  = req.query.id
+	const Book_ID = req.query.id
 	const getAuthorSql = (
 		"SELECT a.* " +
 		"FROM author a, is_written_by w " +
@@ -134,8 +154,7 @@ app.get('/book', (req, res) => {
 	)
 	Promise.all([getAuthorSql, getSeriesSql, getGenreSql].map(x => queryMySql(x))).then((data) => {
 		let answer = {}
-		for (let x of data) {
-		}
+		answer = { authors: data[0], Series: data[1], genres: data[2] }
 		res.send(answer)
 	}, (error) => {
 		res.status(500).send(error)

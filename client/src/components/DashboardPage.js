@@ -1,12 +1,13 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useStore } from 'react-redux'
 import { Select, Table } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import './DashboardPage.scss';
 export default function DashboardPage(options) {
   const { Option } = Select;
   const history = useHistory()
+  const { cache } = useStore() // accessing the global cache
   const User_Name = useSelector(state => state.any.User_Name)
   const User_ID = useSelector(state => state.any.User_ID)
 
