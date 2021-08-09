@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Form, Input, Select, InputNumber, DatePicker, Row, Col } from 'antd'
 import { HomeFilled } from '@ant-design/icons'
+import { useSelector } from 'react-redux'
 
 import './AdvancedSearchPage.scss'
 
@@ -11,6 +12,7 @@ export default function AdvancedSearchPage() {
   const navigateTo = (url) =>{ 
     history.push(url)
   }
+  const User_Name = useSelector(state=>state.User_Name)
 
   const typeBar = (
     <div className="type-bar">
@@ -129,7 +131,7 @@ export default function AdvancedSearchPage() {
 
   return (
     <div className="advanced-search-page">
-      <div className="userName">(Name)</div>
+      <div className="userName">{User_Name}</div>
       {typeBar}
       {searchPane}
     </div>
