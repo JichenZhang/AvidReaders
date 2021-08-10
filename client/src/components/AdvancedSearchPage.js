@@ -7,134 +7,151 @@ import { useSelector } from 'react-redux'
 import './AdvancedSearchPage.scss'
 
 export default function AdvancedSearchPage() {
-  const [type, setType] = useState('book') // book, author, series
-  const history = useHistory()
-  const navigateTo = (url) =>{ 
-    history.push(url)
-  }
-  const User_Name = useSelector(state=>state.User_Name)
+	const [type, setType] = useState('book') // book, author, series
+	const history = useHistory()
+	const navigateTo = (url) => {
+		history.push(url)
+	}
+	const User_Name = useSelector(state => state.User_Name)
 
-  const typeBar = (
-    <div className="type-bar">
-      <HomeFilled 
-        className="home-icon" 
-        onClick={()=>navigateTo('/dashboard')}
-      />
-      <span
-        className="type-span"
-        style={type === 'book' ? { borderBottomWidth: '4px' } : { borderBottomWidth: '0px' }}
-        onClick={() => setType('book')}
-      >Book</span>
-      <span
-        className="type-span"
-        style={type === 'author' ? { borderBottomWidth: '4px' } : { borderBottomWidth: '0px' }}
-        onClick={() => setType('author')}
-      >Author</span>
-      <span
-        className="type-span"
-        style={type === 'series' ? { borderBottomWidth: '4px' } : { borderBottomWidth: '0px' }}
-        onClick={() => setType('series')}
-      >Series</span>
-    </div>
-  )
+	const typeBar = (
+		<div className="type-bar">
+			<HomeFilled
+				className="home-icon"
+				onClick={() => navigateTo('/dashboard')}
+			/>
+			<span
+				className="type-span"
+				style={type === 'book' ? { borderBottomWidth: '4px' } : { borderBottomWidth: '0px' }}
+				onClick={() => setType('book')}
+			>Book</span>
+			<span
+				className="type-span"
+				style={type === 'author' ? { borderBottomWidth: '4px' } : { borderBottomWidth: '0px' }}
+				onClick={() => setType('author')}
+			>Author</span>
+			<span
+				className="type-span"
+				style={type === 'series' ? { borderBottomWidth: '4px' } : { borderBottomWidth: '0px' }}
+				onClick={() => setType('series')}
+			>Series</span>
+		</div>
+	)
+	/**
+	 * as a callback, provided to the search form. 
+	 * This is called when pressing the search button
+	 * @param {form-result} value 
+	 */
+	const onFinishForm = (value) => {
+		console.log(value)
+		switch(type){
+			case 'book':
+				// TODO send value (query) to book
+				navigateTo('/book/')
+				break
+		}
+	}
+	const searchPane = (
+		<div className="search-pane">
+			<Form
+				name="search-pane"
+				layout='vertical'
+				onFinish={onFinishForm}
+			>
+				{(type !== 'author') && <Form.Item
+					label='Title:'
+					name="title"
+				>
+					<Input />
+				</Form.Item>}
+				{(type !== 'author') && <Form.Item
+					label='Author:'
+					name="author"
+				>
+					<Input />
+				</Form.Item>}
+				{(type === 'author') && <Form.Item
+					label='Name:'
+					name="name"
+				>
+					<Input />
+				</Form.Item>}
+				{(type !== 'series') && <Form.Item
+					label='Series:'
+					name="series"
+				>
+					<Input />
+				</Form.Item>}
+				<Form.Item
+					label='Genre:'
+					name='genre'
+				>
+					<Select
+						style={{ backgroundColor: 'white', height: '55px' }}
+						defaultValue='anygenre'>
+						<Select.Option value='anygenre'>Any Genre</Select.Option>
+					</Select>
+				</Form.Item>
+				{(type === 'book') && <Form.Item
+					label='Format:'
+					name="format"
+				>
+					<Input />
+				</Form.Item>}
 
-  const searchPane = (
-    <div className="search-pane">
-      <Form
-        name="search-pane"
-        layout='vertical'
-      >
-        {(type !== 'author') && <Form.Item
-          label='Title:'
-          name="title"
-        >
-          <Input />
-        </Form.Item>}
-        {(type !== 'author') && <Form.Item
-          label='Author:'
-          name="author"
-        >
-          <Input />
-        </Form.Item>}
-        {(type === 'author') && <Form.Item
-          label='Name:'
-          name="name"
-        >
-          <Input />
-        </Form.Item>}
-        {(type !== 'series') && <Form.Item
-          label='Series:'
-          name="series"
-        >
-          <Input />
-        </Form.Item>}
-        <Form.Item
-          label='Genre:'
-          name='genre'
-        >
-          <Select 
-            style={{ backgroundColor: 'white', height: '55px' }}
-            defaultValue='anygenre'>
-            <Select.Option value='anygenre'>Any Genre</Select.Option>
-          </Select>
-        </Form.Item>
-        {(type === 'book') && <Form.Item
-          label='Format:'
-          name="format"
-        >
-          <Input />
-        </Form.Item>}
+				<Form.Item label="Number of Pages:" style={{ marginBottom: 0 }}>
+					<Form.Item
+						name='pagefrom'
+						style={{
+							display: 'inline-block',
+							width: '125px'
+						}}
+					>
+						<InputNumber />
+					</Form.Item>
+					<span style={{
+						display: 'inline-block',
+						width: '57px',
+						textAlign: 'center',
+					}}
+					> - </span>
+					<Form.Item
+						name='pageto'
+						style={{
+							display: 'inline-block',
+							width: '125px'
+						}}
+					>
+						<InputNumber />
+					</Form.Item>
+				</Form.Item>
+				<Form.Item label='Original Publish Date:' style={{ marginBottom: 0 }}>
+					<Form.Item name='datefrom' style={{ display: 'inline-block', width: '125px' }}>
+						<DatePicker picker='year' />
+					</Form.Item>
+					<span style={{
+						display: 'inline-block',
+						width: '57px',
+						textAlign: 'center',
+					}}
+					> - </span>
+					<Form.Item name='dateto' style={{ display: 'inline-block', width: '125px' }}>
+						<DatePicker picker='year' />
+					</Form.Item>
+				</Form.Item>
+				<Form.Item>
+					<input className="search-button" type="submit" value='Search' />
+				</Form.Item>
+			</Form>
+		</div>
+	)
 
-        <Form.Item label="Number of Pages:" style={{marginBottom: 0}}>
-          <Form.Item
-            name='pagefrom'
-            style={{
-              display: 'inline-block',
-              width: '125px'
-            }}
-          >
-            <InputNumber />
-          </Form.Item>
-          <span style={{
-            display: 'inline-block',
-            width: '57px',
-            textAlign: 'center',
-          }}
-          > - </span>
-          <Form.Item
-            name='pageto'
-            style={{
-              display: 'inline-block',
-              width: '125px'
-            }}
-          >
-            <InputNumber />
-          </Form.Item>
-        </Form.Item>
-        <Form.Item label='Original Publish Date:'style={{marginBottom:0}}>
-          <Form.Item name='datefrom' style={{display: 'inline-block', width: '125px'}}>
-            <DatePicker />
-          </Form.Item>
-          <span style={{
-            display: 'inline-block',
-            width: '57px',
-            textAlign: 'center',
-          }}
-          > - </span>
-          <Form.Item name='dateto' style={{display: 'inline-block', width: '125px'}}>
-            <DatePicker />
-          </Form.Item>
-        </Form.Item>
-      </Form>
-    </div>
-  )
-
-  return (
-    <div className="advanced-search-page">
-      <div className="userName">{User_Name}</div>
-      {typeBar}
-      {searchPane}
-    </div>
-  )
+	return (
+		<div className="advanced-search-page">
+			<div className="userName">{User_Name}</div>
+			{typeBar}
+			{searchPane}
+		</div>
+	)
 
 }
