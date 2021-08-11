@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { authenticate, createAccount, getWishlist, getBookDetails } from '../utils/queries.js'
+import { globalStorage, authenticate, createAccount, getWishlist, getBookDetails } from '../utils/queries.js'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserID, setUserName, initWishlist } from '../utils/anySlice'
 
@@ -26,28 +26,26 @@ export default function AuthPage() {
 	}, {
 		title: 'Password', type: 'password'
 	}]
-	const User_ID = useSelector(state => state.any.User_ID)
 
 	function userIDCallback(userID) {
 		dispatch(setUserID(userID))
 	}
 
-	function userInfoCallback(userInfo) {
-		dispatch(setUserID(userInfo.User_ID))
-		dispatch(setUserName(userInfo.User_Name))
-	}
-
-	function wishlistCallback(wishlist) {
-		dispatch(initWishlist(wishlist))
-	}
-
 	async function login() {
 		console.log('sending form,', form)
-		const success = await authenticate(form, userInfoCallback)
-		if (success) {
+		try {
+			const user = await authenticate(form)
+			dispatch(setUserID(user.User_ID))
+			dispatch(setUserName(user.User_Name))
+			const wishlist = await getWishlist(user.User_ID)
+			dispatch(initWishlist(wishlist.map(x => x.Book_ID)))
+
+			await Promise.all(wishlist.map(x=>getBookDetails(x.Book_ID)))
+
 			const path = '/dashboard'
-			getWishlist(User_ID, wishlistCallback)
 			history.push(path)
+		} catch (e) {
+			console.error(e)
 		}
 	}
 	/**

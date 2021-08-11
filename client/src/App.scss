@@ -3,3 +3,10 @@ $minor: #76bddc;
 $bright: #ffffff;
 $dark: #000000;
 $contentFont: normal 30px Segoe UI;
+
+.book-cell {
+    color: $bright;
+    font-size: 25px;
+    line-height: center;
+    cursor: pointer;
+}

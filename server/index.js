@@ -58,6 +58,7 @@ app.get('/user', (req, res) => {
 			return
 		}
 		res.send(result[0])
+		console.log(result[0])
 		return
 	})
 })
@@ -134,6 +135,11 @@ app.get('/wishlist', async (req, res) => {
 app.get('/book', (req, res) => {
 	console.log(req.query)
 	const Book_ID = req.query.id
+	const getBookSql = (
+		"SELECT b.* " +
+		"FROM book b " +
+		"WHERE b.Book_ID = " + Book_ID + ";"
+	)
 	const getAuthorSql = (
 		"SELECT a.* " +
 		"FROM author a, is_written_by w " +
@@ -152,9 +158,9 @@ app.get('/book', (req, res) => {
 		"WHERE g.Book_ID = " + Book_ID + " " +
 		"ORDER BY g.Is_Tagged_As_Number_Of_Times DESC;"
 	)
-	Promise.all([getAuthorSql, getSeriesSql, getGenreSql].map(x => queryMySql(x))).then((data) => {
+	Promise.all([getBookSql, getAuthorSql, getSeriesSql, getGenreSql].map(x => queryMySql(x))).then((data) => {
 		let answer = {}
-		answer = { authors: data[0], Series: data[1], genres: data[2] }
+		answer = { ...data[0][0], authors: data[1], series: data[2], genres: data[3] }
 		res.send(answer)
 	}, (error) => {
 		res.status(500).send(error)

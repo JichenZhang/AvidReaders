@@ -18,6 +18,7 @@ module.exports = {
                 '@select-single-item-height':'50px',
                 '@select-multiple-item-height-lg': '50px',
                 '@heading-color':'#FFFFFF',
+                '@item-hover-bg':'#76bddc'
             },
             javascriptEnabled: true,
           },
