@@ -1,0 +1,109 @@
+@import "../App.scss";
+
+div {
+  color: $bright;
+  font: $headerFont;
+}
+p {
+  margin-bottom: 3px;
+  font: $headerFont;
+}
+.type-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 60px;
+  margin-left: 126px;
+  width: 600px;
+  height: 60px;
+
+  .home-icon {
+    font-size: 40px;
+    margin-right: 74px;
+    color: $bright;
+    border: none;
+    cursor: pointer;
+  }
+
+  .type-span {
+    color: $bright;
+    margin-right: 74px;
+    font-size: 44px;
+    line-height: initial;
+    border-bottom-color: $bright;
+    border-bottom-style: solid;
+  }
+}
+.content-pane {
+  width: 100vw;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border: 1px solid black;
+}
+.detail-col {
+  width: auto;
+  height: auto;
+  margin-top: 85px;
+  margin-left: 126px;
+  border: 1px solid red;
+}
+.pie-col {
+  width: 528;
+  height: auto;
+  margin-top: 51px;
+  margin-right: 173px;
+  border: 1px solid red;
+}
+.pie-label {
+	font-size:10px;
+}
+.book-btn {
+	margin-bottom:5px;
+	cursor: pointer;
+}
+.userName {
+  position: absolute;
+  top: 90px;
+  right: 113px;
+  color: $bright;
+}
+.book-page {
+  background-color: $major;
+  width: 100vw;
+  height: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  .detail-col {
+    display: flex;
+    flex-direction: row;
+  }
+  .content-pane {
+    display: flex;
+    flex-direction: row;
+    .img-col {
+      width: 314px;
+      img {
+        width: 314px;
+      }
+
+      .add-to-wishlist-btn {
+        color: $bright;
+				height: 50px;
+        text-align: center;
+        background-color: $minor;
+        margin-top: 33px;
+        font: $contentFont;
+        cursor: pointer;
+      }
+    }
+    .text-col {
+      border-top: 1px solid white;
+      margin-left: 56px;
+    }
+  }
+}

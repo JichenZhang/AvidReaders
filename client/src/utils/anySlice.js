@@ -23,16 +23,27 @@ export const anySlice = createSlice({
             ...state,
             wishlist: action.payload
         }),
-        removeFromWishlist: (state, action) => ({
-            ...state,
-            wishlist: state.wishlist.filter(id => id !== action.payload)
-        }),
+        removeFromWishlist: (state, action) => {
+            debugger
+            let newlist = [...state.wishlist]
+            newlist = newlist.filter(x => x !== action.payload)
+            return {
+                ...state,
+                wishlist: newlist
+            }
+        },
         addToWishlist: (state, action) => {
-            let newlist = state.wishlist
+            let newlist = [...state.wishlist]
             newlist.push(action.payload)
             return {
                 ...state,
                 wishlist: newlist
+            }
+        },
+        updateWishlist: (state, action) => {
+            return {
+                ...state,
+                wishlist: new Array(...action.payload)
             }
         }
     }

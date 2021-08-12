@@ -95,6 +95,34 @@ async function getWishlist(User_ID) {
 	})
 }
 
+async function addToWishlist(User_ID, Book_ID) {
+	const route = '/wishlist'
+	const url = `${baseUrl}${route}`
+	try {
+		await fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ User_ID, Book_ID })
+		})
+	} catch (error) {
+		alert(error)
+	}
+}
+
+async function removeFromWishlist(User_ID, Book_ID) {
+	const route = '/wishlist'
+	const url = `${baseUrl}${route}?User_ID=${User_ID}&Book_ID=${Book_ID}`
+	try {
+		await fetch(url, {
+			method: 'DELETE',
+		})
+	} catch (error) {
+		alert(error)
+	}
+}
+
 /**
  * 
  * @param {Number} Book_ID 
@@ -126,4 +154,4 @@ async function getBookDetails(Book_ID) {
 	})
 }
 
-export { globalStorage, authenticate, createAccount, getWishlist, getBookDetails, deepCopy, useQuery }
+export { globalStorage, authenticate, createAccount, getWishlist, addToWishlist, removeFromWishlist, getBookDetails, deepCopy, useQuery }

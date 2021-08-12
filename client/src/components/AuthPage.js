@@ -40,7 +40,7 @@ export default function AuthPage() {
 			const wishlist = await getWishlist(user.User_ID)
 			dispatch(initWishlist(wishlist.map(x => x.Book_ID)))
 
-			await Promise.all(wishlist.map(x=>getBookDetails(x.Book_ID)))
+			await Promise.all(wishlist.map(x => getBookDetails(x.Book_ID)))
 
 			const path = '/dashboard'
 			history.push(path)
@@ -72,9 +72,12 @@ export default function AuthPage() {
 			}
 		}
 		return (
-			<div className="auth-input">
+			<div className="auth-input" key={type}>
 				<p>{title}</p>
-				<input type={type} onChange={onchange} />
+				<input 
+					type={type} 
+					onChange={onchange} 
+					value={form[title[0].toLowerCase() + title.slice(1)]} />
 			</div>
 		)
 	}

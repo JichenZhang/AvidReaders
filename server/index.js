@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const mysql = require('mysql2')
+const { query } = require('express')
 
 const app = express()
 const options = {
@@ -109,26 +110,56 @@ app.post('/user', (req, res) => {
 			})
 		})
 	})
-	// res.send({ o: 'hello user' })
+})
+app.post('/wishlist', (req, res) => {
+	console.log(req.body)
+	let { User_ID, Book_ID } = req.body
+	if (isNaN(Number(User_ID)) || isNaN(Number(Book_ID))) {
+		res.sendStatus(400) // wrong input
+		return
+	}
+
+	const addWishlistSql = ("INSERT INTO adds_to_wishlist (User_ID, Book_ID) " +
+		"VALUES ('" + User_ID + "', '" + Book_ID + "');")
+	queryMySql(addWishlistSql)
+		.then(res.sendStatus(200)) // success
+		.catch(err => {
+			console.error(err)
+			res.sendStatus(400) // wrong input
+		})
+})
+app.delete('/wishlist', async (req, res) => {
+	const { User_ID, Book_ID } = req.query
+	const deleteWishlistSql = ("DELETE FROM adds_to_wishlist " +
+		"WHERE User_ID = " + User_ID + " " +
+		"AND Book_ID = " + Book_ID + ";")
+	try {
+		await queryMySql(deleteWishlistSql)
+		res.sendStatus(200) // ok
+		return
+	} catch (err) {
+		console.error(err)
+		res.sendStatus(400)
+	}
 })
 
 // get all wishlist
 app.get('/wishlist', async (req, res) => {
 	console.log(req.query)
-	const {User_ID} = req.query
+	const { User_ID } = req.query
 	const getWishlistSql = (
 		"SELECT b.* " +
 		"FROM book b, adds_to_wishlist w " +
 		"WHERE w.User_ID = " + User_ID + " " +
 		"AND w.Book_ID = b.Book_ID;"
 	)
-	try{
+	try {
 		const data = await queryMySql(getWishlistSql)
 		res.send(data)
-	}catch(e){
+	} catch (e) {
 		res.status(500).send(e)
 	}
-	
+
 })
 
 // get book details - everything related to a book by bookid
@@ -158,10 +189,43 @@ app.get('/book', (req, res) => {
 		"WHERE g.Book_ID = " + Book_ID + " " +
 		"ORDER BY g.Is_Tagged_As_Number_Of_Times DESC;"
 	)
-	Promise.all([getBookSql, getAuthorSql, getSeriesSql, getGenreSql].map(x => queryMySql(x))).then((data) => {
+	const getSimilarSql = (
+		"SELECT b.Book_ID " +
+		"FROM is_similar_to s, book b " +
+		"WHERE s.Book_ID_1 = " + Book_ID + " " +
+		"AND s.Book_ID_2 = b.Book_ID;"
+	)
+	Promise.all([getBookSql, 
+		getAuthorSql, 
+		getSeriesSql, 
+		getGenreSql, 
+		getSimilarSql].map(x => queryMySql(x)))
+		.then((data) => {
 		let answer = {}
-		answer = { ...data[0][0], authors: data[1], series: data[2], genres: data[3] }
-		res.send(answer)
+		answer = { ...data[0][0], 
+			authors: data[1], 
+			series: data[2], 
+			genres: data[3], 
+			similarBooks: data[4].map(x=>x.Book_ID) }
+		console.log(answer)
+		const getWorkSql = (
+			"SELECT w.* " +
+			"FROM work w " +
+			"WHERE w.Work_ID = " + answer.Work_ID + ";"
+		)
+		if (! answer.Book_Title || answer.Book_Title === 'undefined') {
+			res.status(404).send({ message: 'book not found'})
+			return
+		}
+		queryMySql(getWorkSql)
+			.then((data) => {
+				answer = { ...answer, ...data[0] };
+				return
+			})
+			.catch(err => {
+				console.error('no work found for book', answer.Book_Name)
+			})
+			.finally(()=>{res.send(answer)})
 	}, (error) => {
 		res.status(500).send(error)
 	})

@@ -1,30 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useStore } from 'react-redux'
+import _ from 'lodash'
+import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux'
 import { HomeFilled } from '@ant-design/icons'
+import randomColor from 'randomcolor'
 
-import { useQuery, getBookDetails } from '../utils/queries';
+import { useQuery, getBookDetails, addToWishlist, removeFromWishlist } from '../utils/queries';
+import {
+	addToWishlist as addToPersonalWishlist,
+	removeFromWishlist as removeFromPersonalWishlist
+} from '../utils/anySlice'
 
-import './DetailsPage.scss'
+import Ratings from './Ratings'
+import PieChart from './PieChart'
+
+
+import './DetailPages.scss'
 
 export default function BookPage() {
 	const query = useQuery()
-	const id = query.get('id')
+	const history = useHistory()
 	const [bookData, setBookData] = useState(null)
-	const User_Name = useSelector(state => state.User_Name)
-	
-	useEffect(()=>{ 
-		const getBookData = async ()=>{ 
-			const bookDetails = await getBookDetails(id)
+	const [rating, setRating] = useState(NaN)
+	const [similarBookInfo, setSimilarBookInfo] = useState([])
+	const User_Name = useSelector(state => state.any.User_Name)
+	const Book_ID = Number(query.get('id'))
+
+	useEffect(() => {
+		const getBookData = async () => {
+			const bookDetails = await getBookDetails(Book_ID)
 			setBookData(bookDetails)
+			setRating(getRating(bookDetails))
+			try{
+				const similarBooks = await Promise.all(bookDetails.similarBooks?.map?.(bid => getBookDetails(bid)))
+				setSimilarBookInfo(similarBooks)
+			}catch(e){
+				console.error(e)
+			}
 		}
 		getBookData()
-	}, [])
+		return ()=>{
+			setBookData({})
+			setSimilarBookInfo([])
+			setRating(NaN)
+		}
+	}, [Book_ID])
 
-	console.log(bookData)
+	const pieData = bookData?.genres?.map?.(
+		genre => ({
+			title: genre.Genre_Name,
+			value: genre.Is_Tagged_As_Number_Of_Times,
+			color: randomColor()
+		})
+	)
+
+	function getRating(data) {
+		try {
+			return (data.Work_Ratings_Sum / data.Work_Ratings_Count).toFixed(2)
+		} catch (e) {
+			console.log(e)
+			return NaN
+		}
+	}
+
 
 	const typeBar = (
 		<div className="type-bar">
-			<HomeFilled className="home-icon" />
+			<HomeFilled className="home-icon"
+				onClick={() => { history.push('/dashboard') }}
+			/>
 			<span
 				className="type-span"
 				style={{ borderBottomWidth: '4px' }}
@@ -39,10 +83,85 @@ export default function BookPage() {
 			>Series</span>
 		</div>
 	)
+
 	return (
 		<div className="book-page">
 			<div className="userName">{User_Name}</div>
 			{typeBar}
+			<div className="content-pane">
+				<div className="detail-col">
+					<div className="img-col">
+						<img src={bookData?.Book_Image}></img>
+						<WishlistButton Book_ID={Book_ID} />
+					</div>
+					<div className='text-col'>
+						<p>Title: {bookData?.Book_Title}</p>
+						<p>Author: {bookData?.authors?.[0]?.Author_Name}</p>
+						<p>Series: {bookData?.series?.[0]?.Series_Name}</p>
+						<Ratings
+							value={rating}
+							count={bookData?.Work_Ratings_Count}
+						/>
+						<p>Description:<br /> {bookData?.Book_Description}</p>
+						<br />
+						<p># of Pages: {bookData?.Book_Number_Of_Pages}</p>
+						<p>Original Publish Date: {bookData?.Work_Original_Publish_Date}</p>
+					</div>
+				</div>
+				<div className="pie-col">
+					<p>Genres</p>
+					<PieChart
+						data={pieData}
+						label={({ dataEntry }) => dataEntry.title}
+						labelStyle={index => ({
+							fill: pieData[index].color,
+							fontSize: '8px',
+							fontFamily: 'sans-serif'
+						})}
+						lineWidth={20}
+						paddingAngle={18}
+						rounded
+						labelPosition={50}
+						style={{
+							marginTop: '16px',
+							height: '300px',
+						}}
+					/>
+					<p>Readers Also Enjoyed</p>
+					{similarBookInfo.map(otherBook => <p
+						className="book-btn"
+						onClick={() => {
+							history.push(`/book/?id=${otherBook.Book_ID}`
+							)}}
+						key={otherBook.Book_ID}
+					>{otherBook.Book_Title}</p>)
+					}
+				</div>
+			</div>
 		</div>
 	)
+}
+function WishlistButton({ Book_ID }) {
+	const dispatch = useDispatch()
+	const User_ID = useSelector(state => state.any.User_ID)
+	const wishlist = useSelector(state => state.any.wishlist)
+	if (User_ID) { // logged in
+		if (!wishlist.includes(Book_ID)) {
+			return <div className='add-to-wishlist-btn'
+				onClick={() => {
+					addToWishlist(User_ID, Book_ID)
+					dispatch(addToPersonalWishlist(Book_ID))
+				}}
+			>Add to Wishlist</div>
+		} else { // not in wishlist
+			return <div className='add-to-wishlist-btn'
+				onClick={() => {
+					removeFromWishlist(User_ID, Book_ID)
+					dispatch(removeFromPersonalWishlist(Book_ID))
+				}}
+			>Remove from Wishlist</div>
+		}
+	} else {
+		return <></>
+	}
 }

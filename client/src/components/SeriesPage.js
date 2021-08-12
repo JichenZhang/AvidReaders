@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSelector, useStore } from 'react-redux'
 import {HomeFilled} from '@ant-design/icons'
 
-import './DetailsPage.scss'
+import './DetailPages.scss'
 
 export default function SeriesPage() {
   const User_Name = useSelector(state=>state.User_Name)
