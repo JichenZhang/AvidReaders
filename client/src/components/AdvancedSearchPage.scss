@@ -41,20 +41,26 @@
         cursor: pointer;
       }
     }
-    .search-pane{
-      flex-direction: column;
-      margin-left: 126px; 
-      margin-top: 37px;
-      width: 310px;
-      color: $bright;
+    .info-row{
+        display: flex;
+        flex-direction: row;
+				.search-pane{
+					display: flex;
+					flex-direction: column;
+					margin-left: 126px; 
+					margin-top: 37px;
+					width: 310px;
+					color: $bright;
+				}
+				.search-button{
+						background-color:$minor;
+						width: 310px;
+						height: 50px;
+						color: $bright;
+						font-size: 30px;
+						margin-top: 23px;
+				}
     }
-    .search-button{
-        background-color:$minor;
-        width: 310px;
-        height: 50px;
-        color: $bright;
-        font-size: 30px;
-        margin-top: 23px;
-    }
+
 }
   

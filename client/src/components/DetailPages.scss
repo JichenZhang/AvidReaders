@@ -1,13 +1,5 @@
 @import "../App.scss";
 
-div {
-  color: $bright;
-  font: $headerFont;
-}
-p {
-  margin-bottom: 3px;
-  font: $headerFont;
-}
 .type-bar {
   display: flex;
   flex-direction: row;
@@ -40,27 +32,27 @@ p {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  border: 1px solid black;
+  // border: 1px solid black;
 }
 .detail-col {
   width: auto;
   height: auto;
   margin-top: 85px;
   margin-left: 126px;
-  border: 1px solid red;
+  // border: 1px solid red;
 }
 .pie-col {
   width: 528;
   height: auto;
   margin-top: 51px;
   margin-right: 173px;
-  border: 1px solid red;
+  // border: 1px solid red;
 }
 .pie-label {
 	font-size:10px;
 }
 .book-btn {
-	margin-bottom:5px;
+	margin-top:7px;
 	cursor: pointer;
 }
 .userName {
@@ -70,6 +62,14 @@ p {
   color: $bright;
 }
 .book-page {
+	div {
+		color: $bright;
+		font: $headerFont;
+	}
+	p {
+		margin-bottom: 3px;
+		font: $headerFont;
+	}
   background-color: $major;
   width: 100vw;
   height: auto;
@@ -102,7 +102,7 @@ p {
       }
     }
     .text-col {
-      border-top: 1px solid white;
+      // border-top: 1px solid white;
       margin-left: 56px;
     }
   }

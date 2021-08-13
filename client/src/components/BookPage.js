@@ -31,15 +31,15 @@ export default function BookPage() {
 			const bookDetails = await getBookDetails(Book_ID)
 			setBookData(bookDetails)
 			setRating(getRating(bookDetails))
-			try{
+			try {
 				const similarBooks = await Promise.all(bookDetails.similarBooks?.map?.(bid => getBookDetails(bid)))
 				setSimilarBookInfo(similarBooks)
-			}catch(e){
+			} catch (e) {
 				console.error(e)
 			}
 		}
 		getBookData()
-		return ()=>{
+		return () => {
 			setBookData({})
 			setSimilarBookInfo([])
 			setRating(NaN)
@@ -128,14 +128,17 @@ export default function BookPage() {
 						}}
 					/>
 					<p>Readers Also Enjoyed</p>
-					{similarBookInfo.map(otherBook => <p
-						className="book-btn"
-						onClick={() => {
-							history.push(`/book/?id=${otherBook.Book_ID}`
-							)}}
-						key={otherBook.Book_ID}
-					>{otherBook.Book_Title}</p>)
-					}
+					<ul>
+						{similarBookInfo.map(otherBook => <li
+							className="book-btn"
+							onClick={() => {
+								history.push(`/book/?id=${otherBook.Book_ID}`
+								)
+							}}
+							key={otherBook.Book_ID}
+						>{otherBook.Book_Title}</li>)
+						}
+					</ul>
 				</div>
 			</div>
 		</div>

@@ -9,7 +9,8 @@ const baseUrl = 'http://localhost:3001'
 const globalStorage = {
 	books: {},
 	authors: {},
-	series: {}
+	series: {},
+	genres: ["children","comics, graphic","fantasy, paranormal","fiction","history, historical fiction, biography","mystery, thriller, crime","non-fiction","poetry","romance","young-adult"]
 }
 
 function deepCopy(obj) {
@@ -69,6 +70,13 @@ async function createAccount(accountData, userIDCallback) {
 		userIDCallback(res.User_ID)
 	}
 
+}
+
+async function getGenres(){
+	if(globalStorage.genres){
+		console.log('genres', globalStorage.genres)
+		return globalStorage.genres
+	}
 }
 
 /**
@@ -154,4 +162,32 @@ async function getBookDetails(Book_ID) {
 	})
 }
 
-export { globalStorage, authenticate, createAccount, getWishlist, addToWishlist, removeFromWishlist, getBookDetails, deepCopy, useQuery }
+/**
+ * returns a promise of the query result
+ * @param {String} type 'book'||'author'||'series'
+ * @param {Object} query 
+ */
+async function search(type, query) {
+	const route = '/search'
+	let url = `${baseUrl}${route}?type=${type}`
+	for (const key in query) {
+		url += `&${key}=${query[key]}`
+	}
+	return new Promise(async (resolve, reject) => {
+		const response = await fetch(url, {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json'
+			}
+		})
+		if (response.ok) {
+			const res = await response.json()
+			resolve(res)
+		}else{
+			reject(response)
+		}
+	})
+
+}
+
+export { globalStorage, authenticate, createAccount, getWishlist, addToWishlist, removeFromWishlist, getBookDetails, deepCopy, useQuery, search, getGenres }

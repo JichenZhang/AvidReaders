@@ -1,24 +1,35 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Form, Input, Select, InputNumber, DatePicker, Row, Col } from 'antd'
+import { Form, Input, Select, InputNumber, DatePicker, Table } from 'antd'
 import { HomeFilled } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
+
+import { search, getGenres } from '../utils/queries'
 
 import './AdvancedSearchPage.scss'
 
 export default function AdvancedSearchPage() {
 	const [type, setType] = useState('book') // book, author, series
+	const [searchResult, setSearchResult] = useState([])
+	const [genres, setGenres] = useState([])
 	const history = useHistory()
+
+	useEffect(()=>{ 
+		const getGenreCallback = async ()=>{
+			const genres = await getGenres()
+			setGenres(genres)
+		}
+		getGenreCallback()
+	}, [])
 	const navigateTo = (url) => {
 		history.push(url)
 	}
-	const User_Name = useSelector(state => state.User_Name)
+	const User_Name = useSelector(state => state.any.User_Name)
 
 	const typeBar = (
 		<div className="type-bar">
 			<HomeFilled
 				className="home-icon"
-				onClick={() => navigateTo('/dashboard')}
 			/>
 			<span
 				className="type-span"
@@ -42,14 +53,17 @@ export default function AdvancedSearchPage() {
 	 * This is called when pressing the search button
 	 * @param {form-result} value 
 	 */
-	const onFinishForm = (value) => {
-		console.log(value)
-		switch(type){
-			case 'book':
-				// TODO send value (query) to book
-				navigateTo('/book/')
-				break
+	const onFinishForm = async (value) => {
+		if (value.datefrom?.format?.('YYYY')) {
+			value.datefrom = value.datefrom.format('YYYY')
 		}
+		if (value.dateto?.format?.('YYYY')) {
+			value.dateto = value.dateto.format('YYYY')
+		}
+		const searchResult = await search(type, value)
+		console.log('searchresult')
+		console.log(...searchResult)
+		setSearchResult(searchResult)
 	}
 	const searchPane = (
 		<div className="search-pane">
@@ -89,7 +103,10 @@ export default function AdvancedSearchPage() {
 					<Select
 						style={{ backgroundColor: 'white', height: '55px' }}
 						defaultValue='anygenre'>
-						<Select.Option value='anygenre'>Any Genre</Select.Option>
+						<Select.Option value=''>Any Genre</Select.Option>
+						{genres.map(name=>{
+							return <Select.Option value={name}>{name}</Select.Option>}
+						)}
 					</Select>
 				</Form.Item>
 				{(type === 'book') && <Form.Item
@@ -126,7 +143,7 @@ export default function AdvancedSearchPage() {
 					</Form.Item>
 				</Form.Item>
 				<Form.Item label='Original Publish Date:' style={{ marginBottom: 0 }}>
-					<Form.Item name='datefrom' style={{ display: 'inline-block', width: '125px' }}>
+					<Form.Item name='datefrom' style={{ display: 'inline-block', width: '125px', fontSize: '25px', color: 'black' }}>
 						<DatePicker picker='year' />
 					</Form.Item>
 					<span style={{
@@ -135,7 +152,7 @@ export default function AdvancedSearchPage() {
 						textAlign: 'center',
 					}}
 					> - </span>
-					<Form.Item name='dateto' style={{ display: 'inline-block', width: '125px' }}>
+					<Form.Item name='dateto' style={{ display: 'inline-block', width: '125px', fontSize: '25px', color: 'black' }}>
 						<DatePicker picker='year' />
 					</Form.Item>
 				</Form.Item>
@@ -145,12 +162,58 @@ export default function AdvancedSearchPage() {
 			</Form>
 		</div>
 	)
+	function getResultPane() {
+		const columns = {
+			'book':
+				[{
+					title: 'Title',
+					dataIndex: 'Book_Title',
+					key: 'Book_Title',
+					width: '300px',
+					align: 'center',
+					render: (text, record) => <p
+						style={{ color: 'white', cursor: 'pointer'}}
+						onClick={() => { navigateTo(`/book?id=${record.Book_ID}`) }}
+					>{text}</p>,
+				}, {
+					title: 'Rating',
+					dataIndex: 'Book_Average_Rating',
+					key: 'Book_Average_Rating',
+					width: '300px',
+					align: 'center',
+					render: (text) => <p style={{ color: 'white' }}>{text}</p>
+				}, {
+					title: '# of Pages',
+					dataIndex: 'Book_Number_Of_Pages',
+					key: 'Book_Number_Of_Pages',
+					width: '300px',
+					align: 'center',
+					render: (text) => <p style={{ color: 'white' }}>{text}</p>
+				},
+			],
+			'author':[{
 
+			}]
+		}
+		return <Table
+			dataSource={searchResult}
+			columns={columns[type]}
+			width='1000px'
+			style={{
+				color: 'white',
+				marginLeft: '124px',
+				marginTop: '132px'
+			}}
+		/>
+	}
 	return (
 		<div className="advanced-search-page">
 			<div className="userName">{User_Name}</div>
 			{typeBar}
-			{searchPane}
+			<div className="info-row">
+				{searchPane}
+				{getResultPane()}
+			</div>
 		</div>
 	)
 

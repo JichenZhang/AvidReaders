@@ -142,6 +142,338 @@ app.delete('/wishlist', async (req, res) => {
 		res.sendStatus(400)
 	}
 })
+app.get('/search', async (req, res) => {
+	let formattedQuery = req.query
+	for (let key in formattedQuery) {
+		if (formattedQuery[key] === 'undefined' || formattedQuery[key] === 'null') {
+			formattedQuery[key] = ''
+		}
+	}
+	if (!formattedQuery.datefrom){
+		formattedQuery.datefrom = '0'
+	}
+	if (!formattedQuery.dateto){
+		formattedQuery.dateto = '9999'
+	}
+	if (!formattedQuery.pagefrom){
+		formattedQuery.pagefrom = '0'
+	}
+	if (!formattedQuery.pageto){
+		formattedQuery.pageto = '99999999'
+	}
+	console.log('advanced search:', formattedQuery)
+	let searchSql
+	if (req.query.type === 'author') {
+		
+		if (!formattedQuery.genre || formattedQuery.genre == ""){
+			if (formattedQuery.series = ""){
+				searchSql = (`SELECT a.* 
+	
+				FROM book b, is_written_by ba, author a, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+			 GROUP BY a.Author_ID;`)
+			}else{
+				searchSql = `SELECT a.* 
+	
+				FROM book b, is_written_by ba, author a, is_part_of bs, series s, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
+
+				AND s.Series_Name LIKE '%${formattedQuery.series}%' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND s.Series_ID = bs.Series_ID  
+
+				AND bs.Book_ID = b.Book_ID  
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY a.Author_ID;`
+			}
+		}else{
+			if (!formattedQuery.series){
+				searchSql = `SELECT a.* 
+	
+				FROM book b, is_written_by ba, author a, is_tagged_as g, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
+
+				AND g.Genre_Name = '${formattedQuery.genre}' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND b.Book_ID = g.Book_ID  
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY a.Author_ID;`
+			}else{
+				searchSql = `SELECT a.* 
+	
+				FROM book b, is_written_by ba, author a, is_part_of bs, series s, is_tagged_as g, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
+
+				AND s.Series_Name LIKE '%${formattedQuery.series}%' 
+
+				AND g.Genre_Name = '${formattedQuery.genre}' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND s.Series_ID = bs.Series_ID  
+
+				AND bs.Book_ID = b.Book_ID  
+
+				AND b.Book_ID = g.Book_ID  
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY a.Author_ID ;`
+			}
+		}
+	}
+	if (req.query.type === 'book'){
+		if (!formattedQuery.genre){
+			if(!formattedQuery.series){
+				searchSql = `SELECT b.* 
+
+				FROM book b, is_written_by ba, author a, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY b.Work_ID  
+
+				ORDER BY b.Book_Average_Rating DESC;`
+			}else{
+				searchSql = `SELECT b.* 
+
+				FROM book b, is_written_by ba, author a, is_part_of bs, series s, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+
+				AND s.Series_Name LIKE '%${formattedQuery.series}%' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND s.Series_ID = bs.Series_ID  
+
+				AND bs.Book_ID = b.Book_ID  
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY b.Work_ID  
+
+				ORDER BY b.Book_Average_Rating DESC; `
+			}
+		}else{
+			if(!formattedQuery.series){
+				searchSql = `SELECT b.* 
+
+				FROM book b, is_written_by ba, author a, is_tagged_as g, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+
+				AND g.Genre_Name = '${formattedQuery.genre}' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND b.Book_ID = g.Book_ID  
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY b.Work_ID  
+
+				ORDER BY b.Book_Average_Rating DESC;`
+			}else{
+				searchSql = `SELECT b.* 
+
+				FROM book b, is_written_by ba, author a, is_part_of bs, series s, is_tagged_as g, work w  
+
+				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
+
+				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+
+				AND s.Series_Name LIKE '%${formattedQuery.series}%' 
+
+				AND g.Genre_Name = '${formattedQuery.genre}' 
+
+				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
+
+				AND b.Book_Number_Of_Pages BETWEEN ${formattedQuery.pagefrom} AND ${formattedQuery.pageto} 
+
+				AND w.Work_Original_Publish_Date BETWEEN ${formattedQuery.datefrom} AND ${formattedQuery.dateto} 
+
+				AND s.Series_ID = bs.Series_ID  
+
+				AND bs.Book_ID = b.Book_ID  
+
+				AND b.Book_ID = g.Book_ID  
+
+				AND b.Work_ID = w.Work_ID  
+
+				AND b.Book_ID = ba.Book_ID 
+
+				AND ba.Author_ID = a.Author_ID   
+
+				GROUP BY b.Work_ID  
+
+				ORDER BY b.Book_Average_Rating DESC;`
+			}
+		}
+	}
+	if (req.query.type === 'series'){
+		const advancedSeriesSearchSql = (` IF ${req,query.genre} IS NULL OR ${req,query.genre} = "" THEN 
+
+		SELECT b.* 
+
+		FROM book b, is_written_by ba, author a, is_part_of bs, series s, work w  
+
+		AND a.Author_Name LIKE '%${req,query.author}%' 
+
+		AND s.Series_Name LIKE '%${req,query.title}%' 
+
+		AND b.Book_Number_Of_Pages BETWEEN ${req,query.pagefrom} AND ${req,query.pageto} 
+
+		AND w.Work_Original_Publish_Date BETWEEN ${req,query.datefrom} AND ${req,query.dateto} 
+
+		AND s.Series_ID = bs.Series_ID  
+
+		AND bs.Book_ID = b.Book_ID  
+
+		AND b.Work_ID = w.Work_ID  
+
+		AND b.Book_ID = ba.Book_ID 
+
+		AND ba.Author_ID = a.Author_ID   
+
+		GROUP BY s.Series_Name;  
+
+ELSE 
+
+		SELECT b.* 
+
+		FROM book b, is_written_by ba, author a, is_part_of bs, series s, is_tagged_as g, work w  
+
+		AND a.Author_Name LIKE '%${req,query.author}%' 
+
+		AND s.Series_Name LIKE '%${req,query.title}%' 
+
+		AND g.Genre_Name = '${req,query.genre}' 
+
+		AND b.Book_Number_Of_Pages BETWEEN ${req,query.pagefrom} AND ${req,query.pageto} 
+
+		AND w.Work_Original_Publish_Date BETWEEN ${req,query.datefrom} AND ${req,query.dateto} 
+
+		AND s.Series_ID = bs.Series_ID  
+
+		AND bs.Book_ID = b.Book_ID  
+
+		AND b.Book_ID = g.Book_ID  
+
+		AND b.Work_ID = w.Work_ID  
+
+		AND b.Book_ID = ba.Book_ID 
+
+		AND ba.Author_ID = a.Author_ID   
+
+		GROUP BY  s.Series_Name;  
+
+END IF; `)
+		searchSql = advancedSeriesSearchSql
+	}
+	try{
+		console.log(searchSql)
+		const data = await queryMySql(searchSql)
+		console.log(data)
+		res.send(data)
+		return
+	}catch(e){
+		console.error(e)
+		res.sendStatus(400)
+		return
+	}
+})
 
 // get all wishlist
 app.get('/wishlist', async (req, res) => {
@@ -195,40 +527,42 @@ app.get('/book', (req, res) => {
 		"WHERE s.Book_ID_1 = " + Book_ID + " " +
 		"AND s.Book_ID_2 = b.Book_ID;"
 	)
-	Promise.all([getBookSql, 
-		getAuthorSql, 
-		getSeriesSql, 
-		getGenreSql, 
+	Promise.all([getBookSql,
+		getAuthorSql,
+		getSeriesSql,
+		getGenreSql,
 		getSimilarSql].map(x => queryMySql(x)))
 		.then((data) => {
-		let answer = {}
-		answer = { ...data[0][0], 
-			authors: data[1], 
-			series: data[2], 
-			genres: data[3], 
-			similarBooks: data[4].map(x=>x.Book_ID) }
-		console.log(answer)
-		const getWorkSql = (
-			"SELECT w.* " +
-			"FROM work w " +
-			"WHERE w.Work_ID = " + answer.Work_ID + ";"
-		)
-		if (! answer.Book_Title || answer.Book_Title === 'undefined') {
-			res.status(404).send({ message: 'book not found'})
-			return
-		}
-		queryMySql(getWorkSql)
-			.then((data) => {
-				answer = { ...answer, ...data[0] };
+			let answer = {}
+			answer = {
+				...data[0][0],
+				authors: data[1],
+				series: data[2],
+				genres: data[3],
+				similarBooks: data[4].map(x => x.Book_ID)
+			}
+			console.log(answer)
+			const getWorkSql = (
+				"SELECT w.* " +
+				"FROM work w " +
+				"WHERE w.Work_ID = " + answer.Work_ID + ";"
+			)
+			if (!answer.Book_Title || answer.Book_Title === 'undefined') {
+				res.status(404).send({ message: 'book not found' })
 				return
-			})
-			.catch(err => {
-				console.error('no work found for book', answer.Book_Name)
-			})
-			.finally(()=>{res.send(answer)})
-	}, (error) => {
-		res.status(500).send(error)
-	})
+			}
+			queryMySql(getWorkSql)
+				.then((data) => {
+					answer = { ...answer, ...data[0] };
+					return
+				})
+				.catch(err => {
+					console.error('no work found for book', answer.Book_Name)
+				})
+				.finally(() => { res.send(answer) })
+		}, (error) => {
+			res.status(500).send(error)
+		})
 })
 
 app.listen('3001', () => {
