@@ -138,10 +138,16 @@ async function removeFromWishlist(User_ID, Book_ID) {
  */
 async function getBookDetails(Book_ID) {
 	return new Promise(async function (resolve, reject) {
-		if (globalStorage.books[Book_ID]) { // already in cache
-			resolve(globalStorage.books[Book_ID])
+		if (!Book_ID|| isNaN(Number(Book_ID))){ 
+			reject(`Book_ID=<${Book_ID}> is not a valid Book_ID`)
 			return
 		}
+		if (globalStorage.books[Book_ID]) { // already in cache
+			resolve(globalStorage.books[Book_ID])
+			console.log('book cache hit')
+			return
+		}
+		
 		const route = '/book'
 		const url = (
 			baseUrl + route + '?id=' + Book_ID
@@ -162,6 +168,76 @@ async function getBookDetails(Book_ID) {
 	})
 }
 
+/**
+ * get all information related to an author
+ * @param {Number} Author_ID 
+ * @returns a promise of the author information
+ */
+async function getAuthorDetails(Author_ID){
+	return new Promise(async (resolve, reject) => {
+		if (globalStorage.authors[Author_ID]){ // found in cache
+			resolve(globalStorage.authors[Author_ID])
+			console.log('authors cache hit!')
+			return
+		}
+		if (!Author_ID || isNaN(Number(Author_ID))){ 
+			reject(`Author_ID=<${Author_ID}> is not a valid Author_ID`)
+			return
+		}
+		const route = '/author'
+		const url = `${baseUrl}${route}?id=${Author_ID}`
+		const response = await fetch(url, {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json'
+			}
+		})
+		if (response.ok){
+			const res = await response.json()
+			globalStorage.authors[Author_ID] = res
+			resolve(res)
+			return
+		}else{
+			reject(response)
+			return
+		}
+	})
+}
+/**
+ * get all information related to an author
+ * @param {Number} Series_ID 
+ * @returns a promise of the author information
+ */
+async function getSeriesDetails(Series_ID){
+	return new Promise(async (resolve, reject) => {
+		if (globalStorage.series[Series_ID]){ // found in cache
+			resolve(globalStorage.series[Series_ID])
+			console.log('series cache hit!')
+			return
+		}
+		if (!Series_ID || isNaN(Number(Series_ID))){ 
+			reject(`Series_ID=<${Series_ID}> is not a valid Series_ID`)
+			return
+		}
+		const route = '/author'
+		const url = `${baseUrl}${route}?id=${Series_ID}`
+		const response = await fetch(url, {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json'
+			}
+		})
+		if (response.ok){
+			const res = await response.json()
+			globalStorage.series[Series_ID] = res
+			resolve(res)
+			return
+		}else{
+			reject(response)
+			return
+		}
+	})
+}
 /**
  * returns a promise of the query result
  * @param {String} type 'book'||'author'||'series'
@@ -190,4 +266,4 @@ async function search(type, query) {
 
 }
 
-export { globalStorage, authenticate, createAccount, getWishlist, addToWishlist, removeFromWishlist, getBookDetails, deepCopy, useQuery, search, getGenres }
+export { globalStorage, authenticate, createAccount, getWishlist, addToWishlist, removeFromWishlist, getBookDetails, getAuthorDetails, getSeriesDetails, deepCopy, useQuery, search, getGenres }

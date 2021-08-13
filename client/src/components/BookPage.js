@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { HomeFilled } from '@ant-design/icons'
 import randomColor from 'randomcolor'
 
-import { useQuery, getBookDetails, addToWishlist, removeFromWishlist } from '../utils/queries';
+import { useQuery, getBookDetails, getAuthorDetails, getSeriesDetails, addToWishlist, removeFromWishlist } from '../utils/queries';
 import {
 	addToWishlist as addToPersonalWishlist,
 	removeFromWishlist as removeFromPersonalWishlist
@@ -16,11 +16,14 @@ import PieChart from './PieChart'
 
 
 import './DetailPages.scss'
+import { isConstructorDeclaration } from 'typescript';
 
 export default function BookPage() {
 	const query = useQuery()
 	const history = useHistory()
-	const [bookData, setBookData] = useState(null)
+	const [bookData, setBookData] = useState({})
+	const [authorData, setAuthorData] = useState({})
+	const [seriesData, setSeriesData] = useState({})
 	const [rating, setRating] = useState(NaN)
 	const [similarBookInfo, setSimilarBookInfo] = useState([])
 	const User_Name = useSelector(state => state.any.User_Name)
@@ -29,10 +32,29 @@ export default function BookPage() {
 	useEffect(() => {
 		const getBookData = async () => {
 			const bookDetails = await getBookDetails(Book_ID)
+			console.log(bookDetails)
 			setBookData(bookDetails)
 			setRating(getRating(bookDetails))
+			let newAuthorData = authorData
+			await Promise.all(bookDetails.authors?.map?.(id => {
+				return new Promise(async resolve => {
+					newAuthorData[id] = await getAuthorDetails(id)
+					resolve()
+				})
+			}))
+			console.log(newAuthorData)
+			setAuthorData(newAuthorData)
+			let newSeriesData = seriesData
+			await Promise.all(bookDetails.series?.map?.(id => {
+				return new Promise(async resolve => {
+					newSeriesData[id] = await getSeriesDetails(id)
+					resolve()
+				})
+			}))
+			console.log(newSeriesData)
+			setSeriesData(newSeriesData)
 			try {
-				const similarBooks = await Promise.all(bookDetails.similarBooks?.map?.(bid => getBookDetails(bid)))
+				const similarBooks = await Promise.all(bookDetails.similarBooks?.map?.(b => getBookDetails(b.Book_ID)))
 				setSimilarBookInfo(similarBooks)
 			} catch (e) {
 				console.error(e)
@@ -83,7 +105,23 @@ export default function BookPage() {
 			>Series</span>
 		</div>
 	)
-
+	function getAuthorName(){
+		try{
+			debugger
+			let s =  authorData[bookData.authors[0]].Author_Name
+			return s
+		}catch(e){
+			console.error(e)
+		}
+	}
+	function getSeriesName(){
+		try{
+			let s = seriesData[bookData.series[0]].Series_Name
+			return s
+		}catch(e){
+			console.error(e)
+		}
+	}
 	return (
 		<div className="book-page">
 			<div className="userName">{User_Name}</div>
@@ -96,8 +134,8 @@ export default function BookPage() {
 					</div>
 					<div className='text-col'>
 						<p>Title: {bookData?.Book_Title}</p>
-						<p>Author: {bookData?.authors?.[0]?.Author_Name}</p>
-						<p>Series: {bookData?.series?.[0]?.Series_Name}</p>
+						<p>Author: {getAuthorName()}</p>
+						<p>Series: {}</p>
 						<Ratings
 							value={rating}
 							count={bookData?.Work_Ratings_Count}

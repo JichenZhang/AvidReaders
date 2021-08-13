@@ -149,24 +149,24 @@ app.get('/search', async (req, res) => {
 			formattedQuery[key] = ''
 		}
 	}
-	if (!formattedQuery.datefrom){
+	if (!formattedQuery.datefrom) {
 		formattedQuery.datefrom = '0'
 	}
-	if (!formattedQuery.dateto){
+	if (!formattedQuery.dateto) {
 		formattedQuery.dateto = '9999'
 	}
-	if (!formattedQuery.pagefrom){
+	if (!formattedQuery.pagefrom) {
 		formattedQuery.pagefrom = '0'
 	}
-	if (!formattedQuery.pageto){
+	if (!formattedQuery.pageto) {
 		formattedQuery.pageto = '99999999'
 	}
 	console.log('advanced search:', formattedQuery)
 	let searchSql
 	if (req.query.type === 'author') {
-		
-		if (!formattedQuery.genre || formattedQuery.genre == ""){
-			if (formattedQuery.series = ""){
+
+		if (!formattedQuery.genre || formattedQuery.genre == "") {
+			if (formattedQuery.series = "") {
 				searchSql = (`SELECT a.* 
 	
 				FROM book b, is_written_by ba, author a, work w  
@@ -188,7 +188,7 @@ app.get('/search', async (req, res) => {
 				AND ba.Author_ID = a.Author_ID   
 
 			 GROUP BY a.Author_ID;`)
-			}else{
+			} else {
 				searchSql = `SELECT a.* 
 	
 				FROM book b, is_written_by ba, author a, is_part_of bs, series s, work w  
@@ -217,8 +217,8 @@ app.get('/search', async (req, res) => {
 
 				GROUP BY a.Author_ID;`
 			}
-		}else{
-			if (!formattedQuery.series){
+		} else {
+			if (!formattedQuery.series) {
 				searchSql = `SELECT a.* 
 	
 				FROM book b, is_written_by ba, author a, is_tagged_as g, work w  
@@ -244,7 +244,7 @@ app.get('/search', async (req, res) => {
 				AND ba.Author_ID = a.Author_ID   
 
 				GROUP BY a.Author_ID;`
-			}else{
+			} else {
 				searchSql = `SELECT a.* 
 	
 				FROM book b, is_written_by ba, author a, is_part_of bs, series s, is_tagged_as g, work w  
@@ -279,9 +279,9 @@ app.get('/search', async (req, res) => {
 			}
 		}
 	}
-	if (req.query.type === 'book'){
-		if (!formattedQuery.genre){
-			if(!formattedQuery.series){
+	if (req.query.type === 'book') {
+		if (!formattedQuery.genre) {
+			if (!formattedQuery.series) {
 				searchSql = `SELECT b.* 
 
 				FROM book b, is_written_by ba, author a, work w  
@@ -305,7 +305,7 @@ app.get('/search', async (req, res) => {
 				GROUP BY b.Work_ID  
 
 				ORDER BY b.Book_Average_Rating DESC;`
-			}else{
+			} else {
 				searchSql = `SELECT b.* 
 
 				FROM book b, is_written_by ba, author a, is_part_of bs, series s, work w  
@@ -336,8 +336,8 @@ app.get('/search', async (req, res) => {
 
 				ORDER BY b.Book_Average_Rating DESC; `
 			}
-		}else{
-			if(!formattedQuery.series){
+		} else {
+			if (!formattedQuery.series) {
 				searchSql = `SELECT b.* 
 
 				FROM book b, is_written_by ba, author a, is_tagged_as g, work w  
@@ -365,7 +365,7 @@ app.get('/search', async (req, res) => {
 				GROUP BY b.Work_ID  
 
 				ORDER BY b.Book_Average_Rating DESC;`
-			}else{
+			} else {
 				searchSql = `SELECT b.* 
 
 				FROM book b, is_written_by ba, author a, is_part_of bs, series s, is_tagged_as g, work w  
@@ -402,20 +402,20 @@ app.get('/search', async (req, res) => {
 			}
 		}
 	}
-	if (req.query.type === 'series'){
-		const advancedSeriesSearchSql = (` IF ${req,query.genre} IS NULL OR ${req,query.genre} = "" THEN 
+	if (req.query.type === 'series') {
+		const advancedSeriesSearchSql = (` IF ${req, query.genre} IS NULL OR ${req, query.genre} = "" THEN 
 
 		SELECT b.* 
 
 		FROM book b, is_written_by ba, author a, is_part_of bs, series s, work w  
 
-		AND a.Author_Name LIKE '%${req,query.author}%' 
+		AND a.Author_Name LIKE '%${req, query.author}%' 
 
-		AND s.Series_Name LIKE '%${req,query.title}%' 
+		AND s.Series_Name LIKE '%${req, query.title}%' 
 
-		AND b.Book_Number_Of_Pages BETWEEN ${req,query.pagefrom} AND ${req,query.pageto} 
+		AND b.Book_Number_Of_Pages BETWEEN ${req, query.pagefrom} AND ${req, query.pageto} 
 
-		AND w.Work_Original_Publish_Date BETWEEN ${req,query.datefrom} AND ${req,query.dateto} 
+		AND w.Work_Original_Publish_Date BETWEEN ${req, query.datefrom} AND ${req, query.dateto} 
 
 		AND s.Series_ID = bs.Series_ID  
 
@@ -435,15 +435,15 @@ ELSE
 
 		FROM book b, is_written_by ba, author a, is_part_of bs, series s, is_tagged_as g, work w  
 
-		AND a.Author_Name LIKE '%${req,query.author}%' 
+		AND a.Author_Name LIKE '%${req, query.author}%' 
 
-		AND s.Series_Name LIKE '%${req,query.title}%' 
+		AND s.Series_Name LIKE '%${req, query.title}%' 
 
-		AND g.Genre_Name = '${req,query.genre}' 
+		AND g.Genre_Name = '${req, query.genre}' 
 
-		AND b.Book_Number_Of_Pages BETWEEN ${req,query.pagefrom} AND ${req,query.pageto} 
+		AND b.Book_Number_Of_Pages BETWEEN ${req, query.pagefrom} AND ${req, query.pageto} 
 
-		AND w.Work_Original_Publish_Date BETWEEN ${req,query.datefrom} AND ${req,query.dateto} 
+		AND w.Work_Original_Publish_Date BETWEEN ${req, query.datefrom} AND ${req, query.dateto} 
 
 		AND s.Series_ID = bs.Series_ID  
 
@@ -462,13 +462,13 @@ ELSE
 END IF; `)
 		searchSql = advancedSeriesSearchSql
 	}
-	try{
+	try {
 		console.log(searchSql)
 		const data = await queryMySql(searchSql)
 		console.log(data)
 		res.send(data)
 		return
-	}catch(e){
+	} catch (e) {
 		console.error(e)
 		res.sendStatus(400)
 		return
@@ -504,13 +504,13 @@ app.get('/book', (req, res) => {
 		"WHERE b.Book_ID = " + Book_ID + ";"
 	)
 	const getAuthorSql = (
-		"SELECT a.* " +
+		"SELECT a.Author_ID " +
 		"FROM author a, is_written_by w " +
 		"WHERE w.Book_ID = " + Book_ID + " " +
 		"AND w.Author_ID = a.Author_ID;"
 	)
 	const getSeriesSql = (
-		"SELECT s.* " +
+		"SELECT s.Series_ID " +
 		"FROM series s, is_part_of p " +
 		"WHERE p.Book_ID = " + Book_ID + " " +
 		"AND p.Series_ID = s.Series_ID;"
@@ -536,10 +536,10 @@ app.get('/book', (req, res) => {
 			let answer = {}
 			answer = {
 				...data[0][0],
-				authors: data[1],
-				series: data[2],
+				authors: data[1].map(a => a.Author_ID),
+				series: data[2].map(s => s.Series_ID),
 				genres: data[3],
-				similarBooks: data[4].map(x => x.Book_ID)
+				similarBooks: data[4].map(b => b.Book_ID)
 			}
 			console.log(answer)
 			const getWorkSql = (
@@ -562,6 +562,70 @@ app.get('/book', (req, res) => {
 				.finally(() => { res.send(answer) })
 		}, (error) => {
 			res.status(500).send(error)
+		})
+})
+
+// get series details - everything related to a series by Series_ID
+app.get('/series', (req, res) => {
+	console.log(req.query)
+	const Series_ID = req.query.id
+	const getSeriesSql = `SELECT * FROM series where Series_ID = ${Series_ID};`
+	const getBooksSql = "SELECT b.Book_ID " +
+		"FROM book b, is_part_of p " +
+		"WHERE p.Series_ID = " + Series_ID + " " +
+		"AND p.Book_ID = b.Book_ID"
+	const getAuthorSql = `SELECT a.Author_ID 
+		FROM author a, is_written_by w, is_part_of p 
+		WHERE p.Series_ID =  ${Series_ID}
+		AND w.Author_ID = a.Author_ID 
+		AND w.Book_ID = p.Book_ID 
+		GROUP BY Author_ID;`
+	Promise.all([getSeriesSql, getBooksSql, getAuthorSql].map(x => queryMySql(x)))
+		.then(data => {
+			let answer = {
+				...data[0][0],
+				books: data[1].map(b => b.Book_ID),
+				authors: data[2].map(a => a.Author_ID)
+			}
+			res.send(answer)
+			return
+		}).catch(err => {
+			res.status(400).send(err)
+			return
+		})
+})
+
+// get author details - everything related to a series by Series_ID
+app.get('/author', (req, res) => {
+	console.log(req.query)
+	const Author_ID = req.query.id
+	const getAuthorSql = `SELECT * FROM author where Author_ID = ${Author_ID};`
+	const getBooksSql = `SELECT *  
+		FROM (SELECT b.* 
+		FROM book b, is_written_by w 
+		WHERE w.Author_ID =  ${Author_ID}
+		AND w.Book_ID = b.Book_ID 
+		GROUP BY b.Work_ID) AS Works 
+		GROUP BY Book_Title 
+		ORDER BY Book_Average_Rating DESC;`
+	const getSeriesSql = "SELECT s.Series_ID " +
+		"FROM series s, is_part_of p, is_written_by w " +
+		"WHERE w.Author_ID = " + Author_ID + " " +
+		"AND w.Book_ID = p.Book_ID " +
+		"AND p.Series_ID = s.Series_ID " +
+		"GROUP BY s.Series_Name;"
+	Promise.all([getAuthorSql, getBooksSql, getSeriesSql].map(x => queryMySql(x)))
+		.then(data => {
+			let answer = {
+				...data[0][0],
+				books: data[1].map(b => b.Book_ID),
+				series: data[2].map(a => a.Series_ID)
+			}
+			res.send(answer)
+			return
+		}).catch(err => {
+			res.status(400).send(err)
+			return
 		})
 })
 

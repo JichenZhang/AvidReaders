@@ -4,7 +4,7 @@ import { useSelector, useStore } from 'react-redux'
 import { Select, Table } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
-import { globalStorage, getBookDetails, deepCopy } from '../utils/queries'
+import { globalStorage, getBookDetails, getAuthorDetails, getSeriesDetails, deepCopy } from '../utils/queries'
 import './DashboardPage.scss';
 export default function DashboardPage(bookData) {
 	const { Option } = Select;
@@ -19,7 +19,17 @@ export default function DashboardPage(bookData) {
 
 	useEffect(() => {
 		async function fetchWishlist() {
-			const rawData = await Promise.all(wishlist.map(id => getBookDetails(id)))
+			let rawData = await Promise.all(wishlist.map(id => getBookDetails(id)))
+			rawData = await Promise.all(rawData.map(book=>{
+				return new Promise(async (resolve, reject) =>{
+					let ans = book
+					ans.authors = await Promise.all(book.authors.map(id => getAuthorDetails(id)))
+					ans.series = await Promise.all(book.series.map(id => getSeriesDetails(id)))
+					resolve(ans)
+				})
+			}))
+			
+
 			const fixedData = rawData.map(book => {
 				const newEntry = deepCopy(book)
 				newEntry.key = book.Book_ID
