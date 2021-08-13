@@ -14,6 +14,8 @@ export default function DashboardPage(bookData) {
 	const User_ID = useSelector(state => state.any.User_ID)
 	const wishlist = useSelector(state => state.any.wishlist)
 	const [wishlistData, setWishlistData] = useState([])
+	const [searchType, setSearchType] = useState('book')
+	const [searchContent, setSearchContent] = useState('')
 
 	useEffect(() => {
 		async function fetchWishlist() {
@@ -48,8 +50,6 @@ export default function DashboardPage(bookData) {
 		// TODO
 		navigateTo('series')
 	}
-
-	console.log(wishlistData)
 
 	const columns = [
 		{
@@ -109,18 +109,29 @@ export default function DashboardPage(bookData) {
 				<div className='select-container'>
 					<Select
 						className='drop-down'
-						defaultValue={'title'}
+						defaultValue={'book'}
 						size={'large'}
+						onChange={(type) => {
+							setSearchType(type)
+						}}
 					>
-						<Option value={'title'}>Title</Option>
+						<Option value={'book'}>Title</Option>
 						<Option value={'author'}>Author</Option>
 						<Option value={'series'}>Series</Option>
 					</Select>
 				</div>
 				<div className='search-box'>
 					<div id='search-box-row1'>
-						<input />
-						<div className='search-button'>
+						<input onChange={(x) => { setSearchContent(x.target.value) }} />
+						<div className='search-button'
+							onClick={() => {
+								debugger
+								history.push({
+									pathname: '/advancedSearch',
+									state: { type: searchType, content: searchContent }
+								})
+							}}
+						>
 							<SearchOutlined className='search-icon' />
 						</div>
 					</div>

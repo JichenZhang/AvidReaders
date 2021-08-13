@@ -288,7 +288,7 @@ app.get('/search', async (req, res) => {
 
 				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
 
-				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
 
 				AND b.Book_Format LIKE '%${formattedQuery.format}%' 
 
@@ -312,7 +312,7 @@ app.get('/search', async (req, res) => {
 
 				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
 
-				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
 
 				AND s.Series_Name LIKE '%${formattedQuery.series}%' 
 
@@ -344,7 +344,7 @@ app.get('/search', async (req, res) => {
 
 				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
 
-				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
 
 				AND g.Genre_Name = '${formattedQuery.genre}' 
 
@@ -372,7 +372,7 @@ app.get('/search', async (req, res) => {
 
 				WHERE b.Book_Title LIKE '%${formattedQuery.title}%' 
 
-				AND a.Author_Name LIKE '%${formattedQuery.title}%' 
+				AND a.Author_Name LIKE '%${formattedQuery.author}%' 
 
 				AND s.Series_Name LIKE '%${formattedQuery.series}%' 
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { Form, Input, Select, InputNumber, DatePicker, Table } from 'antd'
 import { HomeFilled } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
@@ -13,14 +13,44 @@ export default function AdvancedSearchPage() {
 	const [searchResult, setSearchResult] = useState([])
 	const [genres, setGenres] = useState([])
 	const history = useHistory()
+	const location = useLocation()
+	const defaultSearchOptions = {
+		'book': {
+			author: undefined,
+			datefrom: undefined,
+			dateto: undefined,
+			format: undefined,
+			genre: undefined,
+			pagefrom: undefined,
+			pageto: undefined,
+			series: undefined,
+			title: undefined,
+		}
+	}
 
-	useEffect(()=>{ 
-		const getGenreCallback = async ()=>{
+	useEffect(() => {
+		const getGenreCallback = async () => {
 			const genres = await getGenres()
 			setGenres(genres)
 		}
 		getGenreCallback()
 	}, [])
+	useEffect(() => {
+		if (location.state) {
+			console.log('adv search got stattes', location.state)
+			const simpleSearchCallback = async ()=>{
+				let searchOptions = defaultSearchOptions[location.state.type]
+				if (location.state.type === 'book'){
+					searchOptions.title = location.state.content
+				}
+				const searchResult = await search(location.state.type, searchOptions)
+				console.log('searchresult')
+				console.log(...searchResult)
+				setSearchResult(searchResult)
+			}
+			simpleSearchCallback()
+		}
+	}, [location.state])
 	const navigateTo = (url) => {
 		history.push(url)
 	}
@@ -102,10 +132,11 @@ export default function AdvancedSearchPage() {
 				>
 					<Select
 						style={{ backgroundColor: 'white', height: '55px' }}
-						defaultValue='anygenre'>
+						initialValues=''>
 						<Select.Option value=''>Any Genre</Select.Option>
-						{genres.map(name=>{
-							return <Select.Option value={name}>{name}</Select.Option>}
+						{genres.map(name => {
+							return <Select.Option value={name}>{name}</Select.Option>
+						}
 						)}
 					</Select>
 				</Form.Item>
@@ -172,7 +203,7 @@ export default function AdvancedSearchPage() {
 					width: '300px',
 					align: 'center',
 					render: (text, record) => <p
-						style={{ color: 'white', cursor: 'pointer'}}
+						style={{ color: 'white', cursor: 'pointer' }}
 						onClick={() => { navigateTo(`/book?id=${record.Book_ID}`) }}
 					>{text}</p>,
 				}, {
@@ -190,8 +221,8 @@ export default function AdvancedSearchPage() {
 					align: 'center',
 					render: (text) => <p style={{ color: 'white' }}>{text}</p>
 				},
-			],
-			'author':[{
+				],
+			'author': [{
 
 			}]
 		}
